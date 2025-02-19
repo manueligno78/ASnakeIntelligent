@@ -23,18 +23,24 @@ Snake AI is a project that implements a classic Snake game with additional featu
 - **train_snake_ai.py**: (Assumed) Contains the implementation for the genetic algorithm and neural network training.
 - **ui.py**: (Assumed) Contains the UI elements for displaying training progress and evolution graphs.
 - **config.json**: Stores persistent configuration values (e.g., population size and generations).
+- **README.md**: This file.
 
-## Requirements
+**Application Usage**
+Main Menu: When you start the application, a main menu will appear with the following options:
+Play Snake: Launches manual play.
+AI Play Snake: Lets you watch the best AI-controlled game.
+AI Learn: Starts the training process for the AI.
+Settings: Opens the settings screen where you can adjust and save configuration parameters.
+Manual Play: Use the arrow keys to control the snake. The game returns to the main menu when you quit.
+AI Learning: Progress is displayed in real time through UI elements and an evolution graph. Press ESC during training to stop.
+Settings: Click on a field (Population Size or Generations), edit the value, and press ENTER to save. Changes will persist in config.json.
 
-- Python 3.11+
-- Pygame 2.6.1+
-- Other standard Python libraries (e.g., json, os)
+**Contributing**
+Feel free to fork the repository and submit pull requests.
+For bug reports or feature requests, please open an issue on the repository.
+License
+This project is for educational purposes.
 
-## How to Run
-
-1. Clone the repository.
-2. Navigate to the project directory.
-3. Run the game using:
-
-   ```bash
-   python game.py
+**Acknowledgements**
+Built with Python and Pygame.
+Inspired by classic Snake games and machine learning projects.

@@ -1,4 +1,5 @@
 import msvcrt
+import random
 from snake_game import SnakeGame
 from train_snake_ai import GeneticAlgorithm
 from ui import TrainingUI, EvolutionGraph
@@ -12,7 +13,8 @@ def ai_play_snake():
     except FileNotFoundError:
         print("No saved model found. Please run AI Learn first.")
         return
-    best_snake = SnakeGame(ga.population[0])
+    random_snake = random.choice(ga.population)
+    best_snake = SnakeGame(random_snake)
     best_snake.play_best_snake()
 
 def ai_learn():

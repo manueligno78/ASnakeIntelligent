@@ -39,9 +39,11 @@ class SnakeGame:
         inputs = self.get_environment_data()
         direction_index = self.neural_net.predict_direction(inputs)
         directions = [(0, -GRID_SIZE), (0, GRID_SIZE), (-GRID_SIZE, 0), (GRID_SIZE, 0)]
-        if directions[direction_index] == (-self.direction[0], -self.direction[1]):
-            direction_index = (direction_index + 2) % 4
-        self.direction = directions[direction_index]
+        proposed_direction = directions[direction_index]
+        # Prevent reversal: if proposed direction is the reverse of current direction, retain current direction.
+        if proposed_direction == (-self.direction[0], -self.direction[1]):
+            proposed_direction = self.direction
+        self.direction = proposed_direction
 
         head = (self.snake[0][0] + self.direction[0], self.snake[0][1] + self.direction[1])
         if head in self.snake or head[0] < 0 or head[0] >= WIDTH or head[1] < 0 or head[1] >= HEIGHT:

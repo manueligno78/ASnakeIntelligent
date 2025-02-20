@@ -18,17 +18,24 @@ def manual_play():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP and game.direction != (0, GRID_SIZE):
-                    game.direction = (0, -GRID_SIZE)
-                elif event.key == pygame.K_DOWN and game.direction != (0, GRID_SIZE):
-                    game.direction = (0, GRID_SIZE)
-                elif event.key == pygame.K_LEFT and game.direction != (GRID_SIZE, 0):
-                    game.direction = (-GRID_SIZE, 0)
-                elif event.key == pygame.K_RIGHT and game.direction != (-GRID_SIZE, 0):
-                    game.direction = (GRID_SIZE, 0)
-                elif event.key == pygame.K_ESCAPE:
-                    running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+
+        keys = pygame.key.get_pressed()
+        pressed_keys = []
+        if keys[pygame.K_UP]:
+            pressed_keys.append((0, -GRID_SIZE))
+        if keys[pygame.K_DOWN]:
+            pressed_keys.append((0, GRID_SIZE))
+        if keys[pygame.K_LEFT]:
+            pressed_keys.append((-GRID_SIZE, 0))
+        if keys[pygame.K_RIGHT]:
+            pressed_keys.append((GRID_SIZE, 0))
+        
+        if len(pressed_keys) == 1:
+            new_direction = pressed_keys[0]
+            if new_direction != (-game.direction[0], -game.direction[1]):
+                game.direction = new_direction
 
         head = (game.snake[0][0] + game.direction[0],
                 game.snake[0][1] + game.direction[1])

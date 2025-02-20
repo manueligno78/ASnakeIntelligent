@@ -33,29 +33,49 @@ class EvolutionGraph:
         self.generations = []
         self.best_scores = []
         self.avg_scores = []
-        # Enable interactive mode and create a figure
-        plt.ion()
-        self.fig, self.ax = plt.subplots()
-        self.line_best, = self.ax.plot([], [], label="Best Score")
-        self.line_avg, = self.ax.plot([], [], label="Average Score")
-        self.ax.legend()
-        self.ax.set_xlabel("Generation")
-        self.ax.set_ylabel("Score")
-        plt.show()
+    
+    def update_graph(self, generation, best_score, avg_score):
+        self.generations.append(generation)
+        self.best_scores.append(best_score)
+        self.avg_scores.append(avg_score)
+    
+    def draw_graph(self, surface, rect):
+        pygame.draw.rect(surface, (255, 255, 255), rect, 2)
+        if len(self.generations) < 2:
+            font = pygame.font.Font(None, 24)
+            msg = font.render("No data yet", True, (255,255,255))
+            surface.blit(msg, (rect.x + 10, rect.y + 10))
+            return
 
-    def update_graph(self, gen, best, avg):
-        self.generations.append(gen)
-        self.best_scores.append(best)
-        self.avg_scores.append(avg)
-        self.line_best.set_data(self.generations, self.best_scores)
-        self.line_avg.set_data(self.generations, self.avg_scores)
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.fig.canvas.draw()
-        self.fig.canvas.flush_events()
-        plt.pause(0.001)
+        max_score = max(self.best_scores)
+        min_score = min(self.best_scores)
+        score_range = max_score - min_score if max_score != min_score else 1
+        count = len(self.generations)
+        x_spacing = rect.width / (count - 1)
 
-    def plot_progress(self):
-        # Optionally, if you wish to block at the end.
-        plt.ioff()
-        plt.show()
+        points = []
+        for i, score in enumerate(self.best_scores):
+            x = rect.x + i * x_spacing
+            y = rect.y + rect.height - ((score - min_score) / score_range * rect.height)
+            points.append((x, y))
+        pygame.draw.lines(surface, (0, 255, 0), False, points, 2)
+
+        avg_points = []
+        for i, score in enumerate(self.avg_scores):
+            x = rect.x + i * x_spacing
+            y = rect.y + rect.height - ((score - min_score) / score_range * rect.height)
+            avg_points.append((x, y))
+        pygame.draw.lines(surface, (255, 255, 0), False, avg_points, 2)
+
+        # Disegna le etichette per max, min e (se presente) zero
+        font = pygame.font.Font(None, 20)
+        max_text = font.render(f"{max_score:.2f}", True, (255,255,255))
+        min_text = font.render(f"{min_score:.2f}", True, (255,255,255))
+        surface.blit(max_text, (rect.x - max_text.get_width() - 5, rect.y - 5))
+        surface.blit(min_text, (rect.x - min_text.get_width() - 5, rect.y + rect.height - min_text.get_height()))
+        if min_score < 0 < max_score:
+            zero_norm = (0 - min_score) / score_range
+            zero_y = rect.y + rect.height - zero_norm * rect.height
+            pygame.draw.line(surface, (255,0,0), (rect.x, zero_y), (rect.x + rect.width, zero_y), 1)
+            zero_text = font.render("0", True, (255,255,255))
+            surface.blit(zero_text, (rect.x - zero_text.get_width() - 5, zero_y - zero_text.get_height()/2))

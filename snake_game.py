@@ -37,7 +37,6 @@ class SnakeGame:
 
     def move(self):
         inputs = self.get_environment_data()
-        # Use the neural network's prediction (assumed to be implemented)
         direction_index = self.neural_net.predict_direction(inputs)
         directions = [(0, -GRID_SIZE), (0, GRID_SIZE), (-GRID_SIZE, 0), (GRID_SIZE, 0)]
         if directions[direction_index] == (-self.direction[0], -self.direction[1]):
@@ -72,7 +71,7 @@ class SnakeGame:
         pygame.init()
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         clock = pygame.time.Clock()
-        font = pygame.font.Font(None, 30)
+        font = pygame.font.Font(None, 15)
         running = True
 
         while running:
@@ -96,6 +95,4 @@ class SnakeGame:
             pygame.display.flip()
             clock.tick(10)
         pygame.quit()
-        # When finished, return to the main menu
-        from menu import main_menu
-        main_menu()
+        # Removed automatic call to main_menu()

@@ -6,7 +6,7 @@ from constants import WIDTH, HEIGHT, WHITE, BLACK, GRAY
 def main_menu():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Welcome to Snake AI")
+    pygame.display.set_caption("A Snake Intelligent")
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 36)
 

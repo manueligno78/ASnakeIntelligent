@@ -73,7 +73,7 @@ class NeuralNetwork:
         split_indices = [
             input_size * hidden_size,
             input_size * hidden_size + hidden_size,
-            input_size * hidden_size + hidden_size + hidden_size * output_size,
+            input_size * hidden_size + hidden_size * output_size,
             input_size * hidden_size + hidden_size + hidden_size * output_size + output_size
         ]
         weights_input_hidden = decompressed[:split_indices[0]].reshape(input_size, hidden_size)
@@ -87,3 +87,26 @@ class NeuralNetwork:
             "bias_output": bias_output
         }
         self.set_genetic_code(genetic_code)
+
+    def get_activations(self, inputs):
+        """Compute and return activations for input, hidden, and output layers."""
+        # Input layer activation as-is
+        input_activation = inputs
+        hidden_input = np.dot(inputs, self.weights_input_hidden) + self.bias_hidden
+        if self.activation_function == "relu":
+            hidden_output = self.relu(hidden_input)
+        else:
+            hidden_output = self.sigmoid(hidden_input)
+        output_input = np.dot(hidden_output, self.weights_hidden_output) + self.bias_output
+        if self.activation_function == "relu":
+            output_activation = self.relu(output_input)
+        else:
+            output_activation = self.sigmoid(output_input)
+        return [input_activation, hidden_output, output_activation]
+
+    def get_genetic_fingerprint(self):
+        """Return a compact fingerprint of the genetic code."""
+        import hashlib
+        encoded = self.encode_genetic_code()
+        h = hashlib.sha256(encoded.encode('utf-8')).hexdigest()
+        return h[:10]  # Return first 10 hex characters as fingerprint

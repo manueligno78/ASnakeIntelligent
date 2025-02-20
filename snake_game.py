@@ -96,3 +96,11 @@ class SnakeGame:
             clock.tick(10)
         pygame.quit()
         # Removed automatic call to main_menu()
+
+    # New method: Draw the current game state on the provided surface.
+    def draw(self, surface):
+        from constants import GRID_SIZE, BLACK, RED, GREEN  # ensure constants available
+        surface.fill(BLACK)
+        pygame.draw.rect(surface, RED, (*self.food, GRID_SIZE, GRID_SIZE))
+        for segment in self.snake:
+            pygame.draw.rect(surface, GREEN, (*segment, GRID_SIZE, GRID_SIZE))

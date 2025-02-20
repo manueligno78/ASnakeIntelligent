@@ -3,6 +3,11 @@ import sys
 from play_modes import manual_play, ai_play_snake, ai_learn, settings
 from constants import WIDTH, HEIGHT, WHITE, BLACK, GRAY
 
+def exit_app():
+    import sys
+    pygame.quit()
+    sys.exit()
+
 def main_menu():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -15,6 +20,7 @@ def main_menu():
         {"text": "AI Play Snake", "action": ai_play_snake},
         {"text": "AI Learn", "action": ai_learn},
         {"text": "Settings", "action": settings},
+        {"text": "Exit", "action": exit_app}
     ]
     selected_index = None
     menu_rects = []

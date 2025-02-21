@@ -47,11 +47,21 @@ class EvolutionGraph:
             surface.blit(msg, (rect.x + 10, rect.y + 10))
             return
 
-        max_score = max(self.best_scores)
-        min_score = min(self.best_scores)
+        min_score = 0  
+        max_score = max(self.best_scores) if self.best_scores else 1
         score_range = max_score - min_score if max_score != min_score else 1
         count = len(self.generations)
         x_spacing = rect.width / (count - 1)
+
+        # Draw horizontal ticks on y-axis
+        num_ticks = 5
+        tick_interval = score_range / num_ticks
+        for i in range(num_ticks + 1):
+            tick_value = min_score + i * tick_interval
+            y = rect.y + rect.height - (tick_value / score_range * rect.height)
+            pygame.draw.line(surface, (200,200,200), (rect.x - 5, y), (rect.x, y), 1)
+            tick_label = pygame.font.Font(None, 20).render(f"{tick_value:.2f}", True, (255,255,255))
+            surface.blit(tick_label, (rect.x - tick_label.get_width() - 10, y - tick_label.get_height()/2))
 
         points = []
         for i, score in enumerate(self.best_scores):
@@ -66,16 +76,10 @@ class EvolutionGraph:
             y = rect.y + rect.height - ((score - min_score) / score_range * rect.height)
             avg_points.append((x, y))
         pygame.draw.lines(surface, (255, 255, 0), False, avg_points, 2)
-
-        # Disegna le etichette per max, min e (se presente) zero
-        font = pygame.font.Font(None, 20)
-        max_text = font.render(f"{max_score:.2f}", True, (255,255,255))
-        min_text = font.render(f"{min_score:.2f}", True, (255,255,255))
+        
+        # Draw labels for max and 0
+        font_label = pygame.font.Font(None, 20)
+        max_text = font_label.render(f"{max_score:.2f}", True, (255,255,255))
+        zero_text = font_label.render("0", True, (255,255,255))
         surface.blit(max_text, (rect.x - max_text.get_width() - 5, rect.y - 5))
-        surface.blit(min_text, (rect.x - min_text.get_width() - 5, rect.y + rect.height - min_text.get_height()))
-        if min_score < 0 < max_score:
-            zero_norm = (0 - min_score) / score_range
-            zero_y = rect.y + rect.height - zero_norm * rect.height
-            pygame.draw.line(surface, (255,0,0), (rect.x, zero_y), (rect.x + rect.width, zero_y), 1)
-            zero_text = font.render("0", True, (255,255,255))
-            surface.blit(zero_text, (rect.x - zero_text.get_width() - 5, zero_y - zero_text.get_height()/2))
+        surface.blit(zero_text, (rect.x - zero_text.get_width() - 5, rect.y + rect.height - zero_text.get_height()))

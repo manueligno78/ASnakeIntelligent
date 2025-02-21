@@ -56,7 +56,8 @@ def training_menu_view_unified(screen, clock, font, title_font, graph):
     return choice
 
 def ai_play_snake():
-    pop_size, _, hidden_layer_size, activation_function, learning_rate, mutation_rate = load_config()
+    # Unpack 7 values; ignore graph_update_rate with a dummy variable
+    pop_size, _, hidden_layer_size, activation_function, learning_rate, mutation_rate, _ = load_config()
     ga = GeneticAlgorithm(population_size=pop_size,
                           hidden_size=hidden_layer_size,
                           activation_function=activation_function,
@@ -68,12 +69,12 @@ def ai_play_snake():
         print("No saved model found. Please run AI Learn first.")
         return
     print("Genetic code:", ga.population[0].encode_genetic_code())
-    # Create a list of snake games from the current generation
     snake_games = [SnakeGame(nn) for nn in ga.population]
     play_snake_with_network_visualization(snake_games)
 
 def ai_learn():
-    pop_size, gens, hidden_layer_size, activation_function, learning_rate, mutation_rate = load_config()
+    # Unpack 7 values; use graph_update_rate in aggregation
+    pop_size, gens, hidden_layer_size, activation_function, learning_rate, mutation_rate, graph_update_rate = load_config()
     ga = GeneticAlgorithm(population_size=pop_size,
                           hidden_size=hidden_layer_size,
                           activation_function=activation_function,
@@ -95,11 +96,25 @@ def ai_learn():
     graph_rect = pygame.Rect(50, 80, 700, 300)
     info_y = 400
 
+    stop_training = False
+    # Determine window length for aggregation if graph_update_rate > 0
+    window_length = 1 if graph_update_rate <= 0 else max(1, int(gens * graph_update_rate))
+    # Temporary lists for window aggregation
+    window_best = []
+    window_avg = []
+    
     for generation in range(gens):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("Training interrupted by user.")
+                    stop_training = True
+                    break
+        if stop_training:
+            break
         if msvcrt.kbhit():
             key = msvcrt.getch()
             if key == b'\x1b':
@@ -115,17 +130,30 @@ def ai_learn():
             print(f"Fitness: {fitness}")
         best_score = max(scores)
         avg_score = sum(scores) / len(scores)
-
-        # <-- Aggiorna il grafico con i dati del training -->
-        graph.update_graph(generation + 1, best_score, avg_score)
-
+        # Append for aggregation
+        window_best.append(best_score)
+        window_avg.append(avg_score)
+        # Update graph only if in realtime mode or end of aggregation window reached
+        if graph_update_rate <= 0 or (generation + 1) % window_length == 0:
+            # If aggregating, take max of best and average of avg over the window
+            agg_best = max(window_best) if window_best else best_score
+            agg_avg = sum(window_avg) / len(window_avg) if window_avg else avg_score
+            graph.update_graph(generation + 1, agg_best, agg_avg)
+            window_best = []
+            window_avg = []
         ga.generate_next_generation(scores)
 
         screen.fill((30, 30, 30))
-        title_surface = title_font.render(f"Training - Generation {generation+1}", True, (255,255,255))
+        # Title with total generations
+        title_surface = title_font.render(f"Training - Generation {generation+1}/{gens}", True, (255,255,255))
         screen.blit(title_surface, (50, 20))
-        info_surface = font.render(f"Best: {best_score}   Avg: {avg_score:.2f}", True, (255,255,255))
+        # Format best score to two decimals
+        info_surface = font.render(f"Best: {best_score:.2f}   Avg: {avg_score:.2f}", True, (255,255,255))
         screen.blit(info_surface, (50, info_y))
+        config_surface = font.render(
+            f"Pop: {pop_size}   LR: {learning_rate}   Mut: {mutation_rate}   Hidden: {hidden_layer_size}   Act: {activation_function}",
+            True, (255,255,255))
+        screen.blit(config_surface, (50, info_y + 30))
         if hasattr(graph, "draw_graph"):
             graph.draw_graph(screen, graph_rect)
         else:

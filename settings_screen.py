@@ -10,14 +10,15 @@ def settings():
     font = pygame.font.Font(None, 24)  # Reduced font size
     title_font = pygame.font.Font(None, 36)  # Larger font for title
     config = load_config()
-    population_size, generations, hidden_layer_size, activation_function, learning_rate, mutation_rate = config
+    population_size, generations, hidden_layer_size, activation_function, learning_rate, mutation_rate, graph_update_rate = config
 
     input_boxes = [
         {"label": "Population Size", "value": str(population_size), "rect": pygame.Rect(250, 50, 140, 32)},
         {"label": "Generations", "value": str(generations), "rect": pygame.Rect(250, 100, 140, 32)},
         {"label": "Hidden Layer Size", "value": str(hidden_layer_size), "rect": pygame.Rect(250, 150, 140, 32)},
         {"label": "Learning Rate", "value": str(learning_rate), "rect": pygame.Rect(250, 250, 140, 32)},
-        {"label": "Mutation Rate", "value": str(mutation_rate), "rect": pygame.Rect(250, 300, 140, 32)}
+        {"label": "Mutation Rate", "value": str(mutation_rate), "rect": pygame.Rect(250, 300, 140, 32)},
+        {"label": "Graph Update Rate", "value": str(graph_update_rate), "rect": pygame.Rect(250, 350, 140, 32)}  # Use loaded value
     ]
 
     activation_functions = ["sigmoid", "relu"]
@@ -47,7 +48,8 @@ def settings():
                         int(input_boxes[2]["value"]),
                         activation_functions[activation_index],
                         float(input_boxes[3]["value"]),
-                        float(input_boxes[4]["value"])
+                        float(input_boxes[4]["value"]),
+                        float(input_boxes[5]["value"])  # New parameter passed
                     )
                     print("Settings saved.")
                     running = False  # Close settings screen and return to main menu

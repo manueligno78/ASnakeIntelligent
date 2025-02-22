@@ -1,10 +1,10 @@
 import pygame
-from config import load_config, save_config
+from config.config import load_config, save_config
 import os
 import shutil
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from ui.utils import draw_input_box, draw_label
+from utils.utils import draw_input_box, draw_label
 
 def open_model_menu():
     # Opens a dialog to choose to load a model file or wipe the existing model
@@ -71,18 +71,21 @@ def settings():
                 if model_button.collidepoint(event.pos):
                     open_model_menu()
                 if save_button.collidepoint(event.pos):
-                    save_config(
-                        int(input_boxes[0]["value"]),
-                        int(input_boxes[1]["value"]),
-                        int(input_boxes[2]["value"]),
-                        activation_functions[activation_index],
-                        float(input_boxes[3]["value"]),
-                        float(input_boxes[4]["value"]),
-                        float(input_boxes[5]["value"])
-                    )
-                    print("Settings saved.")
+                    try:
+                        pop_val = int(input_boxes[0]["value"]) if input_boxes[0]["value"].isdigit() else population_size
+                        gens_val = int(input_boxes[1]["value"]) if input_boxes[1]["value"].isdigit() else generations
+                        hidden_val = int(input_boxes[2]["value"]) if input_boxes[2]["value"].isdigit() else hidden_layer_size
+                        lr_val = float(input_boxes[3]["value"]) if input_boxes[3]["value"].replace('.', '', 1).isdigit() else learning_rate
+                        mut_val = float(input_boxes[4]["value"]) if input_boxes[4]["value"].replace('.', '', 1).isdigit() else mutation_rate
+                        graph_val = float(input_boxes[5]["value"]) if input_boxes[5]["value"].replace('.', '', 1).isdigit() else graph_update_rate
+                    except Exception as e:
+                        print("Error converting input: ", e)
+                        return
+                    save_config(pop_val, gens_val, hidden_val, activation_functions[activation_index], lr_val, mut_val, graph_val)
+                    print("Settings saved, exiting settings...")
                     running = False
                 if back_button.collidepoint(event.pos):
+                    print("Exiting settings (Back)")
                     running = False
             elif event.type == pygame.KEYDOWN:
                 if active_box:
@@ -114,4 +117,6 @@ def settings():
         back_text = font.render("Back", True, (0, 0, 0))
         screen.blit(back_text, (back_button.x + 20, back_button.y + 10))
         pygame.display.flip()
+        pygame.time.wait(30)  # Short wait, if needed.
+    pygame.event.clear()
     return

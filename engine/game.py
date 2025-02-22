@@ -1,7 +1,7 @@
 import pygame
 import random
 import numpy as np
-from config import WIDTH, HEIGHT, GRID_SIZE, WHITE, GREEN, RED, BLACK
+from config.config import WIDTH, HEIGHT, GRID_SIZE, WHITE, GREEN, RED, BLACK
 
 class SnakeGame:
     def __init__(self, neural_net):
@@ -82,7 +82,7 @@ class SnakeGame:
         pygame.quit()
 
     def draw(self, surface):
-        from config import GRID_SIZE, BLACK, RED, GREEN
+        from config.config import GRID_SIZE, BLACK, RED, GREEN
         surface.fill(BLACK)
         pygame.draw.rect(surface, RED, (*self.food, GRID_SIZE, GRID_SIZE))
         for segment in self.snake:

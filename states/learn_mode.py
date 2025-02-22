@@ -1,5 +1,6 @@
 import pygame
 import msvcrt
+import time  # NEW: for timing generations
 from engine.game import SnakeGame   # updated import
 from ai.genetic_algorithm import GeneticAlgorithm
 from ui.evolution_graph import EvolutionGraph
@@ -70,7 +71,14 @@ def ai_learn():
     window_best = []
     window_avg = []
     
+    # NEW: Initialize variables for extra info.
+    max_best = 0
+    max_best_avg = 0
+    total_gen_time = 0
+    last_gen_time = 0
+
     for generation in range(gens):
+        start_time = time.time()  # NEW: Generation start time.
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -93,11 +101,20 @@ def ai_learn():
             game = SnakeGame(neural_net)
             fitness = game.run()
             scores.append(fitness)
-            print(f"Fitness: {fitness}")
+            #print(f"Fitness: {fitness}")
         best_score = max(scores)
         avg_score = sum(scores) / len(scores)
         window_best.append(best_score)
         window_avg.append(avg_score)
+        if best_score > max_best:
+            max_best = best_score
+        if avg_score > max_best_avg:
+            max_best_avg = avg_score
+        
+        last_gen_time = time.time() - start_time  # NEW: Compute generation time.
+        total_gen_time += last_gen_time
+        mean_time = total_gen_time / (generation + 1)  # NEW: Mean generation time.
+        
         if graph_update_rate <= 0 or (generation + 1) % window_length == 0:
             agg_best = max(window_best) if window_best else best_score
             agg_avg = sum(window_avg) / len(window_avg) if window_avg else avg_score
@@ -113,6 +130,11 @@ def ai_learn():
         screen.blit(info_surface, (50, info_y))
         config_surface = font.render(f"Pop: {pop_size}   LR: {learning_rate}   Mut: {mutation_rate}   Hidden: {hidden_layer_size}   Act: {activation_function}", True, (255,255,255))
         screen.blit(config_surface, (50, info_y + 30))
+        # NEW: Render additional timing and max score info.
+        timing_surface = font.render(f"Last Gen Time: {last_gen_time:.2f}s   Mean Time: {mean_time:.2f}s", True, (255,255,255))
+        screen.blit(timing_surface, (50, info_y + 60))
+        extra_surface = font.render(f"Max Best: {max_best:.2f}   Max Avg: {max_best_avg:.2f}", True, (255,255,255))
+        screen.blit(extra_surface, (50, info_y + 90))
         if hasattr(graph, "draw_graph"):
             graph.draw_graph(screen, graph_rect)
         else:
@@ -122,10 +144,8 @@ def ai_learn():
     
     choice = training_menu_view_unified(screen, clock, font, title_font, graph)
     if choice.get("watch"):
-        # Instead of launching a new view, reconnect to the same AI Play mode view:
         from states.play_mode import ai_play_snake
         ai_play_snake()
     if choice.get("save"):
         ga.save_population("saved_model.pkl")
-    # Do not call pygame.quit() here
-    return  # Simply return to allow main_menu() to be re-called from the top-level.
+    return

@@ -4,6 +4,7 @@ import os
 import shutil
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from ui.utils import draw_input_box, draw_label
 
 def open_model_menu():
     # Opens a dialog to choose to load a model file or wipe the existing model
@@ -26,7 +27,7 @@ def open_model_menu():
     root.destroy()
 
 def settings():
-    from menu import main_menu
+    from ui.menu import main_menu
 
     pygame.init()
     screen = pygame.display.set_mode((500, 500))
@@ -81,10 +82,8 @@ def settings():
                     )
                     print("Settings saved.")
                     running = False
-                    main_menu()
                 if back_button.collidepoint(event.pos):
                     running = False
-                    main_menu()
             elif event.type == pygame.KEYDOWN:
                 if active_box:
                     if event.key == pygame.K_RETURN:
@@ -98,11 +97,8 @@ def settings():
         title_surface = title_font.render("Settings", True, (255, 255, 255))
         screen.blit(title_surface, (screen.get_width() // 2 - title_surface.get_width() // 2, 10))
         for box in input_boxes:
-            pygame.draw.rect(screen, (255, 255, 255), box["rect"], 2)
-            text_surface = font.render(box["value"], True, (255, 255, 255))
-            screen.blit(text_surface, (box["rect"].x + 5, box["rect"].y + 5))
-            label_surface = font.render(box["label"], True, (255, 255, 255))
-            screen.blit(label_surface, (box["rect"].x - 200, box["rect"].y + 5))
+            draw_input_box(screen, box["rect"], box["value"], font)
+            draw_label(screen, box["label"], (box["rect"].x - 200, box["rect"].y + 5), font)
         pygame.draw.rect(screen, (255, 255, 255), activation_rect, 2)
         activation_surface = font.render(activation_functions[activation_index], True, (255, 255, 255))
         screen.blit(activation_surface, (activation_rect.x + 5, activation_rect.y + 5))
@@ -118,4 +114,4 @@ def settings():
         back_text = font.render("Back", True, (0, 0, 0))
         screen.blit(back_text, (back_button.x + 20, back_button.y + 10))
         pygame.display.flip()
-    pygame.quit()
+    return

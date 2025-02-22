@@ -1,7 +1,7 @@
 import pygame
 import random
 import numpy as np
-from constants import WIDTH, HEIGHT, GRID_SIZE, WHITE, GREEN, RED, BLACK
+from config import WIDTH, HEIGHT, GRID_SIZE, WHITE, GREEN, RED, BLACK
 
 class SnakeGame:
     def __init__(self, neural_net):
@@ -18,7 +18,8 @@ class SnakeGame:
 
     def spawn_food(self):
         while True:
-            food = (random.randint(0, (WIDTH // GRID_SIZE) - 1) * GRID_SIZE, random.randint(0, (HEIGHT // GRID_SIZE) - 1) * GRID_SIZE)
+            food = (random.randint(0, (WIDTH // GRID_SIZE) - 1) * GRID_SIZE, 
+                    random.randint(0, (HEIGHT // GRID_SIZE) - 1) * GRID_SIZE)
             if food not in self.snake:
                 return food
 
@@ -39,11 +40,9 @@ class SnakeGame:
         if proposed_direction == (-self.direction[0], -self.direction[1]):
             proposed_direction = self.direction
         self.direction = proposed_direction
-
         head = (self.snake[0][0] + self.direction[0], self.snake[0][1] + self.direction[1])
         if head in self.snake or head[0] < 0 or head[0] >= WIDTH or head[1] < 0 or head[1] >= HEIGHT:
             return False
-
         self.snake.insert(0, head)
         if head == self.food:
             self.food = self.spawn_food()
@@ -52,11 +51,8 @@ class SnakeGame:
         else:
             self.snake.pop()
             self.energy -= 1
-
         self.steps += 1
-        if self.energy <= 0:
-            return False
-        return True
+        return False if self.energy <= 0 else True
 
     def run(self):
         while self.move():
@@ -86,7 +82,7 @@ class SnakeGame:
         pygame.quit()
 
     def draw(self, surface):
-        from constants import GRID_SIZE, BLACK, RED, GREEN
+        from config import GRID_SIZE, BLACK, RED, GREEN
         surface.fill(BLACK)
         pygame.draw.rect(surface, RED, (*self.food, GRID_SIZE, GRID_SIZE))
         for segment in self.snake:

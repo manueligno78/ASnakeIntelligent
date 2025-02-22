@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from snake_ai import NeuralNetwork
+from ai.neural_network import NeuralNetwork
 import pickle
 
 class GeneticAlgorithm:

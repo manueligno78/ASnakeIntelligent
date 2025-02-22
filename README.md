@@ -11,7 +11,6 @@ Snake AI is a project that implements a classic Snake game with additional featu
 
 ## Project Structure
 
-- **constants.py**: Contains global settings and color definitions.
 - **config.py**: Handles loading and saving configuration settings from/to `config.json`.
 - **snake_game.py**: Implements the core Snake game logic.
 - **manual_play.py**: Contains the function to play the game manually.

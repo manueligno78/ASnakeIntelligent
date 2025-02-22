@@ -3,9 +3,9 @@ __all__ = ["ai_play_snake", "ai_learn", "training_menu_view_unified"]
 import msvcrt
 import random
 import pygame
-from snake_game import SnakeGame
-from train_snake_ai import GeneticAlgorithm
-from ui import EvolutionGraph
+from snake.game import SnakeGame
+from ai.genetic_algorithm import GeneticAlgorithm
+from ui.evolution_graph import EvolutionGraph
 from config import load_config
 
 def training_menu_view_unified(screen, clock, font, title_font, graph):
@@ -19,7 +19,7 @@ def training_menu_view_unified(screen, clock, font, title_font, graph):
             if event.type == pygame.QUIT:
                 choice = {"watch": False, "save": False}
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if watch_button.collidepoint(event.pos):
+                if watch_button.collidepoint(event.pos): 
                     choice = {"watch": True, "save": False}
                 elif save_button.collidepoint(event.pos):
                     choice = {"watch": False, "save": True}
@@ -140,7 +140,7 @@ def ai_learn():
     if choice.get("save"):
         ga.save_population("saved_model.pkl")
     pygame.quit()
-    from menu import main_menu
+    from ui.menu import main_menu
     main_menu()
 
 def play_snake_with_network_visualization(snake_games):
@@ -184,7 +184,7 @@ def play_snake_with_network_visualization(snake_games):
         pygame.display.flip()
         clock.tick(10)
     pygame.quit()
-    from menu import main_menu
+    from ui.menu import main_menu
     main_menu()
 
 def generate_random_activations(neural_net):

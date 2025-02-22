@@ -1,7 +1,8 @@
 import pygame
 import sys
 from play_modes import manual_play, ai_play_snake, ai_learn, settings
-from constants import WIDTH, HEIGHT, WHITE, BLACK, GRAY
+from config import WIDTH, HEIGHT, WHITE, BLACK, GRAY
+from ui.utils import draw_label  # new helper
 
 def exit_app():
     pygame.quit()
@@ -53,9 +54,9 @@ def main_menu():
                         break
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and selected_index is not None:
                 action = menu_items[selected_index]["action"]
-                pygame.quit()
+                # Remove pygame.quit() here so that the menu is preserved
                 action()
-                running = False
+                # After the action completes, reinitialize the menu loop
                 break
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False

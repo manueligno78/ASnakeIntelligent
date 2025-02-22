@@ -1,6 +1,7 @@
 import pygame
-from constants import WIDTH, HEIGHT, GRID_SIZE, WHITE, BLACK, GREEN, RED
-from snake_game import SnakeGame
+from config import WIDTH, HEIGHT, GRID_SIZE, WHITE, BLACK, GREEN, RED
+from snake.game import SnakeGame
+from ui.utils import draw_label  # use shared drawing helper
 
 def manual_play():
     pygame.init()
@@ -45,10 +46,9 @@ def manual_play():
         pygame.draw.rect(screen, RED, (*game.food, GRID_SIZE, GRID_SIZE))
         for segment in game.snake:
             pygame.draw.rect(screen, GREEN, (*segment, GRID_SIZE, GRID_SIZE))
-        score_text = font.render("Score: " + str(game.score), True, WHITE)
-        screen.blit(score_text, (10, 10))
+        draw_label(screen, "Score: " + str(game.score), (10, 10), font, WHITE)
         pygame.display.flip()
         clock.tick(10)
     pygame.quit()
-    from menu import main_menu
+    from ui.menu import main_menu
     main_menu()

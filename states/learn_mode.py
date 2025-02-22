@@ -1,6 +1,7 @@
 import pygame
 import msvcrt
 import time  # NEW: for timing generations
+import pickle  # NEW: for saving best performer
 from engine.game import SnakeGame   # updated import
 from ai.genetic_algorithm import GeneticAlgorithm
 from ui.evolution_graph import EvolutionGraph
@@ -74,6 +75,7 @@ def ai_learn():
     # NEW: Initialize variables for extra info.
     max_best = 0
     max_best_avg = 0
+    best_net = None          # NEW: store best performing neural net
     total_gen_time = 0
     last_gen_time = 0
 
@@ -104,10 +106,11 @@ def ai_learn():
             #print(f"Fitness: {fitness}")
         best_score = max(scores)
         avg_score = sum(scores) / len(scores)
-        window_best.append(best_score)
-        window_avg.append(avg_score)
+        # Update max values; also store best_net when a new max is achieved.
         if best_score > max_best:
             max_best = best_score
+            # Assume each game is run with a specific neural_net; here, pick the one that gave best_score.
+            best_net = ga.population[scores.index(best_score)]
         if avg_score > max_best_avg:
             max_best_avg = avg_score
         
@@ -135,6 +138,11 @@ def ai_learn():
         screen.blit(timing_surface, (50, info_y + 60))
         extra_surface = font.render(f"Max Best: {max_best:.2f}   Max Avg: {max_best_avg:.2f}", True, (255,255,255))
         screen.blit(extra_surface, (50, info_y + 90))
+        # NEW: Use get_genetic_fingerprint to display the best performer's genetic fingerprint.
+        if best_net is not None and hasattr(best_net, "get_genetic_fingerprint"):
+            fingerprint = best_net.get_genetic_fingerprint()
+            code_surface = font.render("Code: " + fingerprint, True, (255,255,255))
+            screen.blit(code_surface, (50, info_y + 120))
         if hasattr(graph, "draw_graph"):
             graph.draw_graph(screen, graph_rect)
         else:
@@ -148,4 +156,9 @@ def ai_learn():
         ai_play_snake()
     if choice.get("save"):
         ga.save_population("saved_model.pkl")
+        # NEW: save the best performer as a pickle file if possible.
+        if best_net is not None:
+            with open("c:/Users/manue/Desktop/repositories/snake2/best_performer.pkl", "wb") as f:
+                pickle.dump(best_net, f)
+            print("Best performer saved to best_performer.pkl")
     return

@@ -5,7 +5,6 @@ from constants import POPULATION_SIZE, GENERATIONS
 CONFIG_FILE = "config.json"
 
 def load_config(filename="config.json"):
-    """Load configuration from config.json; fallback to defaults if not present."""
     if os.path.exists(filename):
         with open(filename, "r") as f:
             config = json.load(f)
@@ -15,7 +14,7 @@ def load_config(filename="config.json"):
         activation_function = config.get("ACTIVATION_FUNCTION", None)
         learning_rate = config.get("LEARNING_RATE", None)
         mutation_rate = config.get("MUTATION_RATE", None)
-        graph_update_rate = config.get("GRAPH_UPDATE_RATE", 0.0)  # New parameter
+        graph_update_rate = config.get("GRAPH_UPDATE_RATE", 0.0)
     else:
         pop_size, gens = POPULATION_SIZE, GENERATIONS
         hidden_layer_size = None
@@ -26,7 +25,6 @@ def load_config(filename="config.json"):
     return pop_size, gens, hidden_layer_size, activation_function, learning_rate, mutation_rate, graph_update_rate
 
 def save_config(population_size, generations, hidden_layer_size, activation_function, learning_rate, mutation_rate, graph_update_rate, filename="config.json"):
-    """Save the provided settings to config.json."""
     config = {
         "POPULATION_SIZE": population_size,
         "GENERATIONS": generations,
@@ -34,7 +32,7 @@ def save_config(population_size, generations, hidden_layer_size, activation_func
         "ACTIVATION_FUNCTION": activation_function,
         "LEARNING_RATE": learning_rate,
         "MUTATION_RATE": mutation_rate,
-        "GRAPH_UPDATE_RATE": graph_update_rate  # New parameter
+        "GRAPH_UPDATE_RATE": graph_update_rate
     }
     with open(filename, "w") as f:
         json.dump(config, f)

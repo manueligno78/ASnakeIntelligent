@@ -9,8 +9,7 @@ class SnakeGame:
         self.reset()
 
     def reset(self):
-        self.snake = [(WIDTH // (2 * GRID_SIZE) * GRID_SIZE,
-                       HEIGHT // (2 * GRID_SIZE) * GRID_SIZE)]
+        self.snake = [(WIDTH // (2 * GRID_SIZE) * GRID_SIZE, HEIGHT // (2 * GRID_SIZE) * GRID_SIZE)]
         self.direction = (GRID_SIZE, 0)
         self.food = self.spawn_food()
         self.score = 0
@@ -19,8 +18,7 @@ class SnakeGame:
 
     def spawn_food(self):
         while True:
-            food = (random.randint(0, (WIDTH // GRID_SIZE) - 1) * GRID_SIZE,
-                    random.randint(0, (HEIGHT // GRID_SIZE) - 1) * GRID_SIZE)
+            food = (random.randint(0, (WIDTH // GRID_SIZE) - 1) * GRID_SIZE, random.randint(0, (HEIGHT // GRID_SIZE) - 1) * GRID_SIZE)
             if food not in self.snake:
                 return food
 
@@ -31,16 +29,13 @@ class SnakeGame:
         obstacle_down = 1 if (head_y + GRID_SIZE >= HEIGHT or (head_x, head_y + GRID_SIZE) in self.snake) else 0
         obstacle_left = 1 if (head_x - GRID_SIZE < 0 or (head_x - GRID_SIZE, head_y) in self.snake) else 0
         obstacle_right = 1 if (head_x + GRID_SIZE >= WIDTH or (head_x + GRID_SIZE, head_y) in self.snake) else 0
-        return np.array([(food_x - head_x) / WIDTH,
-                         (food_y - head_y) / HEIGHT,
-                         obstacle_up, obstacle_down, obstacle_left, obstacle_right])
+        return np.array([(food_x - head_x) / WIDTH, (food_y - head_y) / HEIGHT, obstacle_up, obstacle_down, obstacle_left, obstacle_right])
 
     def move(self):
         inputs = self.get_environment_data()
         direction_index = self.neural_net.predict_direction(inputs)
         directions = [(0, -GRID_SIZE), (0, GRID_SIZE), (-GRID_SIZE, 0), (GRID_SIZE, 0)]
         proposed_direction = directions[direction_index]
-        # Prevent reversal: if proposed direction is the reverse of current direction, retain current direction.
         if proposed_direction == (-self.direction[0], -self.direction[1]):
             proposed_direction = self.direction
         self.direction = proposed_direction
@@ -61,7 +56,6 @@ class SnakeGame:
         self.steps += 1
         if self.energy <= 0:
             return False
-
         return True
 
     def run(self):
@@ -75,33 +69,24 @@ class SnakeGame:
         clock = pygame.time.Clock()
         font = pygame.font.Font(None, 15)
         running = True
-
         while running:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     running = False
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    running = False
-
             if not self.move():
                 self.reset()
-
             screen.fill(BLACK)
             pygame.draw.rect(screen, RED, (*self.food, GRID_SIZE, GRID_SIZE))
             for segment in self.snake:
                 pygame.draw.rect(screen, GREEN, (*segment, GRID_SIZE, GRID_SIZE))
-
             text = font.render("Press ESC to stop", True, WHITE)
             screen.blit(text, (10, 10))
-
             pygame.display.flip()
             clock.tick(10)
         pygame.quit()
-        # Removed automatic call to main_menu()
 
-    # New method: Draw the current game state on the provided surface.
     def draw(self, surface):
-        from constants import GRID_SIZE, BLACK, RED, GREEN  # ensure constants available
+        from constants import GRID_SIZE, BLACK, RED, GREEN
         surface.fill(BLACK)
         pygame.draw.rect(surface, RED, (*self.food, GRID_SIZE, GRID_SIZE))
         for segment in self.snake:

@@ -4,7 +4,6 @@ from play_modes import manual_play, ai_play_snake, ai_learn, settings
 from constants import WIDTH, HEIGHT, WHITE, BLACK, GRAY
 
 def exit_app():
-    import sys
     pygame.quit()
     sys.exit()
 
@@ -41,7 +40,6 @@ def main_menu():
             menu_rects.append((text_rect, item["action"]))
 
         pygame.display.flip()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -53,17 +51,15 @@ def main_menu():
                     if rect.collidepoint(mouse_pos):
                         selected_index = i
                         break
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1 and selected_index is not None:
-                    action = menu_items[selected_index]["action"]
-                    pygame.quit()  # close menu before calling action
-                    action()
-                    running = False
-                    break
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and selected_index is not None:
+                action = menu_items[selected_index]["action"]
+                pygame.quit()
+                action()
+                running = False
+                break
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
                 break
-
         clock.tick(30)
     pygame.quit()
     sys.exit()

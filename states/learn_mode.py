@@ -143,6 +143,16 @@ def ai_learn():
             fingerprint = best_net.get_genetic_fingerprint()
             code_surface = font.render("Code: " + fingerprint, True, (255,255,255))
             screen.blit(code_surface, (50, info_y + 120))
+            # NEW: Render genetic color snake representation for best performer.
+            if hasattr(best_net, "get_genetic_color_array"):
+                colors = best_net.get_genetic_color_array()
+                start_x = 50
+                snake_y = info_y + 150
+                piece_width = 20
+                piece_height = 10
+                for i, color in enumerate(colors):
+                    rect_piece = pygame.Rect(start_x + i * (piece_width + 2), snake_y, piece_width, piece_height)
+                    pygame.draw.rect(screen, color, rect_piece)
         if hasattr(graph, "draw_graph"):
             graph.draw_graph(screen, graph_rect)
         else:

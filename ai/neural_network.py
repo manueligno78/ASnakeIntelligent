@@ -90,3 +90,18 @@ class NeuralNetwork:
         encoded = self.encode_genetic_code()
         h = hashlib.sha256(encoded.encode('utf-8')).hexdigest()
         return h[:10]
+    
+    def get_genetic_color_array(self):
+        fp = self.get_genetic_fingerprint()  # Expected to be 10 chars.
+        colors = []
+        for ch in fp:
+            try:
+                val = int(ch, 16)
+            except ValueError:
+                val = 0
+            # Map the hex digit to a color using different offsets.
+            r = (val * 16) % 256
+            g = ((val + 5) * 16) % 256
+            b = ((val + 10) * 16) % 256
+            colors.append((r, g, b))
+        return colors

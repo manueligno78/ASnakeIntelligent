@@ -25,7 +25,7 @@ class EvolutionGraph:
         count = len(self.generations)
         x_spacing = rect.width / (count - 1)
         
-        # Draw horizontal ticks
+        # Draw vertical ticks (score axis)
         num_ticks = 5
         tick_interval = score_range / num_ticks
         for i in range(num_ticks + 1):
@@ -50,3 +50,15 @@ class EvolutionGraph:
             y = rect.y + rect.height - ((score - min_score) / score_range * rect.height)
             avg_points.append((x, y))
         pygame.draw.lines(surface, (255, 255, 0), False, avg_points, 2)
+        
+        # Add horizontal-axis tick marks and generation references
+        num_xticks = 5
+        tick_interval_index = (count - 1) / num_xticks
+        font = pygame.font.Font(None, 20)
+        for i in range(num_xticks + 1):
+            index = int(round(i * tick_interval_index))
+            x = rect.x + index * x_spacing
+            # Tick marker below the graph
+            pygame.draw.line(surface, (200,200,200), (x, rect.y + rect.height), (x, rect.y + rect.height + 5), 1)
+            label = font.render(str(self.generations[index]), True, (255,255,255))
+            surface.blit(label, (x - label.get_width()/2, rect.y + rect.height + 5))
